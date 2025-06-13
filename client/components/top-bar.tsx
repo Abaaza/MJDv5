@@ -45,9 +45,9 @@ export function TopBar({ onMenuClick }: TopBarProps) {
           <div className="relative hidden sm:block">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <Input
-              placeholder="Search quotations..."
+              placeholder="Search projects..."
               className="w-48 md:w-64 pl-10 bg-white/5 border-white/10 focus:border-[#00D4FF] focus:ring-[#00D4FF]/20"
-              aria-label="Search quotations"
+              aria-label="Search projects"
             />
           </div>
 
@@ -57,10 +57,10 @@ export function TopBar({ onMenuClick }: TopBarProps) {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                 <Input
-                  placeholder="Search quotations..."
+                  placeholder="Search projects..."
                   className="w-full pl-10 pr-10 bg-white/5 border-white/10 focus:border-[#00D4FF] focus:ring-[#00D4FF]/20"
                   autoFocus
-                  aria-label="Search quotations"
+                  aria-label="Search projects"
                 />
               </div>
               <Button

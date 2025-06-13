@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { TrendingUp, TrendingDown, DollarSign, FileText, Users, Clock } from "lucide-react"
-import { loadQuotations } from "@/lib/quotation-store"
+import { loadProjects } from "@/lib/project-store"
 import { formatCurrency } from "@/lib/utils"
 
 interface Metric {
@@ -27,7 +27,7 @@ export function AnalyticsDashboard() {
   const [activity, setActivity] = useState<string[]>([])
 
   useEffect(() => {
-    loadQuotations().then(qs => {
+    loadProjects().then(qs => {
       const now = new Date()
       const monthlyTotal = qs
         .filter(q => {

@@ -10,7 +10,7 @@ import { useMobileOptimization } from "@/hooks/use-mobile-optimization"
 import { memo } from "react"
 
 const navItems = [
-  { name: "Quotations", href: "/quotations", icon: FileText },
+  { name: "Projects", href: "/", icon: FileText },
   { name: "Upload", href: "/upload", icon: Upload },
   { name: "Clients", href: "/clients", icon: Users },
   { name: "Settings", href: "/settings", icon: Settings },

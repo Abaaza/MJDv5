@@ -21,7 +21,8 @@ class PricelistMatcherApp:
         self.root.geometry("670x500")
 
         self.inquiry_path = tk.StringVar()
-        self.api_key_var = tk.StringVar()
+        # Use OPENAI_API_KEY from environment as default if available
+        self.api_key_var = tk.StringVar(value=os.getenv('OPENAI_API_KEY', ''))
         self.output_folder = tk.StringVar()
 
         self.build_widgets()

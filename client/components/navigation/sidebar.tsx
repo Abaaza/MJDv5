@@ -13,7 +13,7 @@ import { UserProfile } from "@/components/user/user-profile"
 import { useSwipeGesture } from "@/hooks/use-swipe-gesture"
 
 const navigation = [
-  { name: "Quotations", href: "/quotations", icon: FileText },
+  { name: "Projects", href: "/", icon: FileText },
   { name: "Price List", href: "/price-list", icon: CircleDollarSign },
   { name: "Upload", href: "/upload", icon: Upload },
   { name: "Clients", href: "/clients", icon: Users },

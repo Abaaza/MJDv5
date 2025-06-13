@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import { useMobileOptimization } from "@/components/mobile-optimization-provider"
 
 const navItems = [
-  { name: "Quotations", href: "/quotations", icon: FileText },
+  { name: "Projects", href: "/", icon: FileText },
   { name: "Clients", href: "/clients", icon: Users },
   { name: "Settings", href: "/settings", icon: Settings },
 ]

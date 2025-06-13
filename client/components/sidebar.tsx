@@ -16,7 +16,7 @@ interface SidebarProps {
 }
 
 const navigation = [
-  { name: "Quotations", href: "/quotations", icon: FileText },
+  { name: "Projects", href: "/", icon: FileText },
   { name: "Price Match", href: "/price-match", icon: FileText },
   { name: "Price List", href: "/price-list", icon: CircleDollarSign },
   { name: "Clients", href: "/clients", icon: Users },

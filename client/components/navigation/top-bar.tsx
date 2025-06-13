@@ -110,9 +110,9 @@ const MobileSearchOverlay = memo(function MobileSearchOverlay({ onClose }: { onC
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
         <Input
           id="mobile-search-input"
-          placeholder="Search quotations..."
+          placeholder="Search projects..."
           className="w-full pl-10 pr-10 bg-white/5 border-white/10 focus:border-[#00D4FF] focus:ring-[#00D4FF]/20"
-          aria-label="Search quotations"
+          aria-label="Search projects"
         />
       </div>
       <Button

@@ -25,7 +25,8 @@ class PricelistMatcherApp:
         # -- default values; overrideable in UI --
         self.pricelist_path = tk.StringVar(value=r"C:\\Users\\aymanhofi\\OneDrive\\Side Projects\\MJD\\Files\\Cleaned files\\MJD-Pricelist_Cleaned.xlsx")
         self.inquiry_path   = tk.StringVar(value=r"C:\\Users\\aymanhofi\\OneDrive\\Side Projects\\MJD\\Files\\Cleaned files\\ETON Inqury Emty pages.xlsx")
-        self.api_key_var    = tk.StringVar(value="NMRRRXIjenLXk4nQhNc3PYhZ13vdMlVLYGRYqkto")
+        # Default to COHERE_API_KEY environment variable if set
+        self.api_key_var    = tk.StringVar(value=os.getenv('COHERE_API_KEY', ''))
         self.output_folder  = tk.StringVar(value=r"C:\\Users\\aymanhofi\\OneDrive\\Side Projects\\MJD\\Files\\Cleaned files")
         self.use_fuzzy      = tk.BooleanVar(value=False)
         self.use_taxonomy   = tk.BooleanVar(value=False)

@@ -12,7 +12,7 @@ import { useMobileOptimization } from "@/hooks/use-mobile-optimization"
 import { useDebounce } from "@/hooks/use-debounce"
 import { cn } from "@/lib/utils"
 
-interface Quotation {
+interface ProjectData {
   id: string
   client: string
   project: string
@@ -22,7 +22,7 @@ interface Quotation {
   items: number
 }
 
-const mockQuotations: Quotation[] = [
+const mockProjects: ProjectData[] = [
   {
     id: "QT-2024-001",
     client: "Metro Construction Ltd.",
@@ -79,11 +79,11 @@ const mockQuotations: Quotation[] = [
   },
 ]
 
-export const QuotationGrid = memo(function QuotationGrid() {
+export const ProjectDataGrid = memo(function ProjectDataGrid() {
   const { isMobile } = useMobileOptimization()
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
-  const [visibleQuotations, setVisibleQuotations] = useState<Quotation[]>(mockQuotations)
+  const [visibleProjects, setVisibleProjects] = useState<ProjectData[]>(mockProjects)
   const [isLoading, setIsLoading] = useState(false)
 
   // Debounced search function
@@ -92,16 +92,16 @@ export const QuotationGrid = memo(function QuotationGrid() {
 
     // Simulate API call delay
     setTimeout(() => {
-      const filtered = mockQuotations.filter((quotation) => {
+      const filtered = mockProjects.filter((project) => {
         const matchesSearch =
-          quotation.client.toLowerCase().includes(term.toLowerCase()) ||
-          quotation.project.toLowerCase().includes(term.toLowerCase()) ||
-          quotation.id.toLowerCase().includes(term.toLowerCase())
-        const matchesStatus = status === "all" || quotation.status === status
+          project.client.toLowerCase().includes(term.toLowerCase()) ||
+          project.project.toLowerCase().includes(term.toLowerCase()) ||
+          project.id.toLowerCase().includes(term.toLowerCase())
+        const matchesStatus = status === "all" || project.status === status
         return matchesSearch && matchesStatus
       })
 
-      setVisibleQuotations(filtered)
+      setVisibleProjects(filtered)
       setIsLoading(false)
     }, 300)
   }, 300)
@@ -133,7 +133,7 @@ export const QuotationGrid = memo(function QuotationGrid() {
           <div className="relative flex-1 sm:w-64">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <Input
-              placeholder="Search quotations..."
+              placeholder="Search projects..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 bg-white/5 border-white/10 focus:border-[#00D4FF] focus:ring-[#00D4FF]/20"
@@ -156,12 +156,12 @@ export const QuotationGrid = memo(function QuotationGrid() {
       </div>
 
       {/* Loading state */}
-      {isLoading && <QuotationGridSkeleton />}
+      {isLoading && <ProjectDataGridSkeleton />}
 
       {/* Grid */}
       {!isLoading && (
         <>
-          {visibleQuotations.length === 0 ? (
+          {visibleProjects.length === 0 ? (
             <EmptyState
               onClearFilters={() => {
                 setSearchTerm("")
@@ -170,10 +170,10 @@ export const QuotationGrid = memo(function QuotationGrid() {
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {visibleQuotations.map((quotation) => (
-                <QuotationCard
-                  key={quotation.id}
-                  quotation={quotation}
+              {visibleProjects.map((project) => (
+                <ProjectDataCard
+                  key={project.id}
+                  project={project}
                   getStatusBadge={getStatusBadge}
                   isMobile={isMobile}
                 />
@@ -186,13 +186,13 @@ export const QuotationGrid = memo(function QuotationGrid() {
   )
 })
 
-// Memoized quotation card component
-const QuotationCard = memo(function QuotationCard({
-  quotation,
+// Memoized project card component
+const ProjectDataCard = memo(function ProjectDataCard({
+  project,
   getStatusBadge,
   isMobile,
 }: {
-  quotation: Quotation
+  project: ProjectData
   getStatusBadge: (status: string) => JSX.Element
   isMobile: boolean
 }) {
@@ -205,26 +205,26 @@ const QuotationCard = memo(function QuotationCard({
     >
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-white truncate">{quotation.id}</h3>
-          {getStatusBadge(quotation.status)}
+          <h3 className="font-semibold text-white truncate">{project.id}</h3>
+          {getStatusBadge(project.status)}
         </div>
-        <p className="text-sm text-gray-400">{quotation.date}</p>
+        <p className="text-sm text-gray-400">{project.date}</p>
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <p className="font-medium text-white">{quotation.client}</p>
-          <p className="text-sm text-gray-400 truncate">{quotation.project}</p>
+          <p className="font-medium text-white">{project.client}</p>
+          <p className="text-sm text-gray-400 truncate">{project.project}</p>
         </div>
 
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-2xl font-bold neon-blue">{quotation.value}</p>
-            <p className="text-xs text-gray-400">{quotation.items} items</p>
+            <p className="text-2xl font-bold neon-blue">{project.value}</p>
+            <p className="text-xs text-gray-400">{project.items} items</p>
           </div>
         </div>
 
         <div className="flex items-center space-x-2 pt-2">
-          <Link href={`/quotations/${quotation.id}`} className="flex-1">
+          <Link href={`/projects/${project.id}`} className="flex-1">
             <Button
               size="sm"
               className="w-full bg-[#00D4FF]/20 hover:bg-[#00D4FF]/30 text-[#00D4FF] border-[#00D4FF]/30 ripple mobile-touch"
@@ -246,7 +246,7 @@ const QuotationCard = memo(function QuotationCard({
 })
 
 // Loading skeleton component
-const QuotationGridSkeleton = memo(function QuotationGridSkeleton() {
+const ProjectDataGridSkeleton = memo(function ProjectDataGridSkeleton() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {[...Array(6)].map((_, index) => (
@@ -285,9 +285,9 @@ const EmptyState = memo(function EmptyState({ onClearFilters }: { onClearFilters
       <div className="h-16 w-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
         <Search className="h-8 w-8 text-gray-400" />
       </div>
-      <h3 className="text-lg font-medium text-white mb-2">No quotations found</h3>
+      <h3 className="text-lg font-medium text-white mb-2">No projects found</h3>
       <p className="text-gray-400 max-w-md">
-        We couldn't find any quotations matching your search criteria. Try adjusting your filters or search term.
+        We couldn't find any projects matching your search criteria. Try adjusting your filters or search term.
       </p>
       <Button className="mt-6 bg-white/10 hover:bg-white/20 text-white" onClick={onClearFilters}>
         Clear filters

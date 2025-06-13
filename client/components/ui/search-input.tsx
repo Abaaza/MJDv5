@@ -14,7 +14,7 @@ interface SearchInputProps {
 }
 
 export const SearchInput = memo(function SearchInput({
-  placeholder = "Search quotations...",
+  placeholder = "Search projects...",
   onChange,
   className,
 }: SearchInputProps) {

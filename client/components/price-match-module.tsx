@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select"
 import { Progress } from "@/components/ui/progress"
 import { priceMatch, searchPriceItems, PriceItem } from "@/lib/api"
-import { saveQuotation } from "@/lib/quotation-store"
+import { saveProject } from "@/lib/project-store"
 import { Trash } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 import { useRouter } from "next/navigation"
@@ -164,7 +164,7 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
       onMatched?.()
       setInputsCollapsed(true)
       if (projectName.trim() && clientName.trim()) {
-        const id = await saveQuotationData(rows)
+        const id = await saveProjectData(rows)
         setAutoQuoteId(id)
       }
     } catch (err) {
@@ -303,11 +303,11 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
     if (!autoQuoteId || !results) return
     if (saveTimer.current) clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(() => {
-      saveQuotationData(results, autoQuoteId)
+      saveProjectData(results, autoQuoteId)
     }, 1000)
   }, [results, discount, autoQuoteId])
 
-  const saveQuotationData = async (rows: Row[], id?: string) => {
+  const saveProjectData = async (rows: Row[], id?: string) => {
     const items = rows.map((r, idx) => {
       const sel = typeof r.selected === 'number' ? r.matches[r.selected] : null
       const rate = r.rateOverride ?? sel?.unitRate ?? 0
@@ -321,7 +321,7 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
       }
     })
     const value = items.reduce((s, i) => s + i.total, 0)
-    const quotation = {
+    const project = {
       id: id || `QT-${Date.now()}`,
       client: clientName,
       project: projectName,
@@ -330,8 +330,8 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
       date: new Date().toISOString(),
       items
     }
-    await saveQuotation(quotation)
-    return quotation.id
+    await saveProject(project)
+    return project.id
   }
 
   const handleDeleteRow = (index: number) => {
@@ -369,7 +369,7 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
       alert('Project and client name are required')
       return
     }
-    const id = await saveQuotationData(results, autoQuoteId || undefined)
+    const id = await saveProjectData(results, autoQuoteId || undefined)
     setAutoQuoteId(id)
     const items = results.map((r, idx) => {
       const sel = typeof r.selected === 'number' ? r.matches[r.selected] : null
@@ -385,7 +385,7 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
     })
     const value = items.reduce((s, i) => s + i.total, 0)
     alert(`Quotation saved. Total: ${formatCurrency(value)}`)
-    router.push(`/quotations/${id}`)
+    router.push(`/${id}`)
   }
 
   return (

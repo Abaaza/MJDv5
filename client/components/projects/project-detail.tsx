@@ -6,18 +6,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { StatusTimeline } from "@/components/quotations/status-timeline"
-import { EditableTable } from "@/components/quotations/editable-table"
+import { StatusTimeline } from "@/components/projects/status-timeline"
+import { EditableTable } from "@/components/projects/editable-table"
 import { ClientDrawer } from "@/components/clients/client-drawer"
 import { UploadModule } from "@/components/upload/upload-module"
 import { ArrowLeft, Edit, Save, Send, User } from "lucide-react"
 import ExcelJS from "exceljs"
 import Link from "next/link"
-import { getQuotation, saveQuotation, QuotationItem } from "@/lib/quotation-store"
+import { getProject, saveProject, ProjectItem } from "@/lib/project-store"
 import { formatCurrency } from "@/lib/utils"
 
-interface QuotationDetailProps {
-  quotationId: string
+interface ProjectDetailProps {
+  projectId: string
 }
 
 interface TimelineItem {
@@ -26,25 +26,25 @@ interface TimelineItem {
   description: string
 }
 
-interface QuotationData {
+interface ProjectData {
   id: string
   client: string
   project: string
   value: number
   status: string
   date: string
-  items: QuotationItem[]
+  items: ProjectItem[]
   description: string
   timeline: TimelineItem[]
 }
 
-export const QuotationDetail = memo(function QuotationDetail({ quotationId }: QuotationDetailProps) {
+export const ProjectDetail = memo(function ProjectDetail({ projectId }: ProjectDetailProps) {
   const params = useSearchParams()
   const [isEditing, setIsEditing] = useState(false)
   const [showClientDrawer, setShowClientDrawer] = useState(false)
 
-  const [quotation, setQuotation] = useState<QuotationData | null>(null)
-  const [items, setItems] = useState<QuotationItem[]>([])
+  const [project, setProject] = useState<ProjectData | null>(null)
+  const [items, setItems] = useState<ProjectItem[]>([])
 
   useEffect(() => {
     if (params.get('edit') === 'true') {
@@ -54,7 +54,7 @@ export const QuotationDetail = memo(function QuotationDetail({ quotationId }: Qu
 
   const exportExcel = async () => {
     const wb = new ExcelJS.Workbook()
-    const ws = wb.addWorksheet('Quotation')
+    const ws = wb.addWorksheet('Project')
     ws.addRow(['Description', 'Qty', 'Unit', 'Unit Price', 'Total'])
     items.forEach(it => {
       ws.addRow([it.description, it.quantity, it.unit, it.unitPrice, it.total])
@@ -63,7 +63,7 @@ export const QuotationDetail = memo(function QuotationDetail({ quotationId }: Qu
     const url = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }))
     const a = document.createElement('a')
     a.href = url
-    a.download = `${quotationId}.xlsx`
+    a.download = `${projectId}.xlsx`
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -75,9 +75,9 @@ export const QuotationDetail = memo(function QuotationDetail({ quotationId }: Qu
   }, [params])
 
   useEffect(() => {
-    getQuotation(quotationId).then(q => {
+    getProject(projectId).then(q => {
       if (!q) return
-      setQuotation({
+      setProject({
         id: q.id,
         client: q.client,
         project: q.project,
@@ -86,13 +86,13 @@ export const QuotationDetail = memo(function QuotationDetail({ quotationId }: Qu
         date: q.date,
         items: q.items,
         description: '',
-        timeline: [{ status: 'created', date: q.date, description: 'Quotation created' }]
+        timeline: [{ status: 'created', date: q.date, description: 'Project created' }]
       })
       setItems(q.items)
     })
-  }, [quotationId])
+  }, [projectId])
 
-  if (!quotation) return <p className="text-white">Quotation not found</p>
+  if (!project) return <p className="text-white">Project not found</p>
 
   return (
     <div className="space-y-6">
@@ -105,8 +105,8 @@ export const QuotationDetail = memo(function QuotationDetail({ quotationId }: Qu
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-white">{quotation.id}</h1>
-            <p className="text-gray-400">{quotation.project}</p>
+            <h1 className="text-3xl font-bold text-white">{project.id}</h1>
+            <p className="text-gray-400">{project.project}</p>
           </div>
           <Badge className="status-pending border rounded-full px-3 py-1">PENDING</Badge>
         </div>
@@ -123,10 +123,10 @@ export const QuotationDetail = memo(function QuotationDetail({ quotationId }: Qu
           <Button
             variant="outline"
             onClick={async () => {
-              if (isEditing && quotation) {
+              if (isEditing && project) {
                 const value = items.reduce((s, i) => s + i.total, 0)
-                await saveQuotation({ ...quotation, items, value })
-                setQuotation({ ...quotation, items, value })
+                await saveProject({ ...project, items, value })
+                setProject({ ...project, items, value })
               }
               setIsEditing(!isEditing)
             }}
@@ -189,7 +189,7 @@ export const QuotationDetail = memo(function QuotationDetail({ quotationId }: Qu
                   <CardTitle className="text-white">Project Notes</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-400">{quotation.description}</p>
+                  <p className="text-gray-400">{project.description}</p>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -220,12 +220,12 @@ export const QuotationDetail = memo(function QuotationDetail({ quotationId }: Qu
           </Card>
 
           {/* Timeline */}
-          <StatusTimeline timeline={quotation.timeline} />
+          <StatusTimeline timeline={project.timeline} />
         </div>
       </div>
 
       {/* Client Drawer */}
-      <ClientDrawer open={showClientDrawer} onClose={() => setShowClientDrawer(false)} client={quotation.client} />
+      <ClientDrawer open={showClientDrawer} onClose={() => setShowClientDrawer(false)} client={project.client} />
     </div>
   )
 })

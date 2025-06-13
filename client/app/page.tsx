@@ -1,4 +1,6 @@
 import { DashboardLayout } from "@/components/dashboard-layout"
+import { AnalyticsDashboard } from "@/components/analytics-dashboard"
+import { ProjectGrid } from "@/components/project-grid"
 export default function HomePage() {
   return (
     <DashboardLayout>
@@ -9,6 +11,9 @@ export default function HomePage() {
           </h1>
           <p className="text-muted-foreground mt-2">Welcome to the MJD platform</p>
         </div>
+
+        <AnalyticsDashboard />
+        <ProjectGrid />
       </div>
     </DashboardLayout>
   )

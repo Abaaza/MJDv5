@@ -20,18 +20,35 @@ export interface Project {
 const KEY = 'projects'
 const base = process.env.NEXT_PUBLIC_API_URL ?? ''
 
+function getToken(): string | null {
+  if (typeof localStorage === 'undefined') return null
+  try {
+    const raw = localStorage.getItem('auth')
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    return parsed.token ?? null
+  } catch {
+    return null
+  }
+}
+
 export async function loadProjects(): Promise<Project[]> {
   try {
-    const res = await fetch(`${base}/api/projects`, { cache: 'no-store' })
+    const headers: Record<string, string> = {}
+    const token = getToken()
+    if (token) headers['Authorization'] = `Bearer ${token}`
+    const res = await fetch(`${base}/api/projects`, { cache: 'no-store', headers })
     if (res.ok) {
       const data = (await res.json()) as Project[]
       if (typeof localStorage !== 'undefined') {
         localStorage.setItem(KEY, JSON.stringify(data))
       }
       return data
+    } else {
+      console.warn('loadProjects failed', res.status)
     }
-  } catch {
-    // ignore network errors
+  } catch (err) {
+    console.error('loadProjects error', err)
   }
   if (typeof localStorage === 'undefined') return []
   try {
@@ -44,11 +61,15 @@ export async function loadProjects(): Promise<Project[]> {
 
 export async function saveProject(q: Project) {
   try {
-    await fetch(`${base}/api/projects`, {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+    const token = getToken()
+    if (token) headers['Authorization'] = `Bearer ${token}`
+    const res = await fetch(`${base}/api/projects`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(q),
     })
+    console.log('saveProject status', res.status)
   } catch {
     // ignore network errors
   }
@@ -62,7 +83,10 @@ export async function saveProject(q: Project) {
 
 export async function getProject(id: string): Promise<Project | undefined> {
   try {
-    const res = await fetch(`${base}/api/projects/${id}`, { cache: 'no-store' })
+    const headers: Record<string, string> = {}
+    const token = getToken()
+    if (token) headers['Authorization'] = `Bearer ${token}`
+    const res = await fetch(`${base}/api/projects/${id}`, { cache: 'no-store', headers })
     if (res.ok) {
       const q = (await res.json()) as Project
       if (typeof localStorage !== 'undefined') {
@@ -73,9 +97,11 @@ export async function getProject(id: string): Promise<Project | undefined> {
         localStorage.setItem(KEY, JSON.stringify(all))
       }
       return q
+    } else {
+      console.warn('getProject failed', res.status)
     }
-  } catch {
-    // ignore
+  } catch (err) {
+    console.error('getProject error', err)
   }
   const all = await loadProjects()
   return all.find(q => q.id === id)
@@ -83,7 +109,11 @@ export async function getProject(id: string): Promise<Project | undefined> {
 
 export async function deleteProject(id: string) {
   try {
-    await fetch(`${base}/api/projects/${id}`, { method: 'DELETE' })
+    const headers: Record<string, string> = {}
+    const token = getToken()
+    if (token) headers['Authorization'] = `Bearer ${token}`
+    const res = await fetch(`${base}/api/projects/${id}`, { method: 'DELETE', headers })
+    console.log('deleteProject status', res.status)
   } catch {
     // ignore
   }

@@ -139,6 +139,13 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
   const runMatch = async () => {
     if (!file) return
     if (!token) return
+    console.log('Starting price match', {
+      fileName: file.name,
+      openaiKey: !!openaiKey,
+      cohereKey: !!cohereKey,
+      geminiKey: !!geminiKey,
+      version,
+    })
     setLoading(true)
     setLogs([])
     setError(null)
@@ -160,11 +167,13 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
         selected: r.matches.length ? 0 : 'manual',
         searchResults: []
       }))
+      console.log('Match results received', rows.length)
       setResults(rows)
       onMatched?.()
       setInputsCollapsed(true)
       if (projectName.trim() && clientName.trim()) {
         const id = await saveProjectData(rows)
+        console.log('Initial project saved', id)
         setAutoQuoteId(id)
       }
     } catch (err) {
@@ -330,7 +339,9 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
       date: new Date().toISOString(),
       items
     }
+    console.log('saveProjectData sending', project)
     await saveProject(project)
+    console.log('saveProjectData complete')
     return project.id
   }
 
@@ -369,7 +380,9 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
       alert('Project and client name are required')
       return
     }
+    console.log('Saving quote', { projectName, clientName })
     const id = await saveProjectData(results, autoQuoteId || undefined)
+    console.log('Quote saved with id', id)
     setAutoQuoteId(id)
     const items = results.map((r, idx) => {
       const sel = typeof r.selected === 'number' ? r.matches[r.selected] : null

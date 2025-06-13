@@ -1,0 +1,45 @@
+# serverless.yml
+
+service: mjd-backend
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: me-south-1
+  stage: ${opt:stage, 'prod'}
+  environment:
+    CONNECTION_STRING: ${env:CONNECTION_STRING, ''}
+    JWT_SECRET: ${env:JWT_SECRET, ''}
+    JWT_REFRESH_SECRET: ${env:JWT_REFRESH_SECRET, ''}
+    RATE_FILE: ${env:RATE_FILE, 'backend/MJD-PRICELIST.xlsx'}
+    EMAIL_USER: ${env:EMAIL_USER, ''}
+    EMAIL_PASS: ${env:EMAIL_PASS, ''}
+    STAGE: ${self:provider.stage}
+    NODE_OPTIONS: "--enable-source-maps"
+
+  # --- MOVED HERE ---
+  # Global HTTP API configuration belongs inside the provider block
+  httpApi:
+    cors: true # wildcard CORS is fine while debugging
+    payload: "2.0"
+
+functions:
+  api:
+    handler: src/handler.handler
+    timeout: 900 # increase timeout to 60 seconds (adjust as needed)
+    memorySize: 2048 # increase memory to 1024 MB (adjustable up to 10240 MB)
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
+
+plugins:
+  - serverless-dotenv-plugin
+
+package:
+  individually: true
+  patterns:
+    - "src/**"
+    - "backend/MJD-PRICELIST.xlsx"
+    - "!tests/**"

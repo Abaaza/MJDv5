@@ -1,0 +1,15 @@
+# apprunner.yaml  (v1 syntax)
+version: 1.0
+runtime: nodejs20 # or nodejs18
+
+build:
+  commands:
+    - npm install -g pnpm
+    - cd client
+    - pnpm install
+    - pnpm run build # -> .next
+
+run:
+  command: pnpm start # calls "next start -p 3000"
+  network:
+    port: 3000

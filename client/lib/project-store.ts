@@ -19,6 +19,8 @@ export interface Project {
 
 const KEY = 'projects'
 const base = process.env.NEXT_PUBLIC_API_URL ?? ''
+// Use dedicated quotes endpoint on the backend
+const QUOTE_URL = `${base}/api/quotes`
 
 function getToken(): string | null {
   if (typeof localStorage === 'undefined') return null
@@ -37,7 +39,7 @@ export async function loadProjects(): Promise<Project[]> {
     const headers: Record<string, string> = {}
     const token = getToken()
     if (token) headers['Authorization'] = `Bearer ${token}`
-    const res = await fetch(`${base}/api/projects`, { cache: 'no-store', headers })
+    const res = await fetch(QUOTE_URL, { cache: 'no-store', headers })
     if (res.ok) {
       const data = (await res.json()) as Project[]
       if (typeof localStorage !== 'undefined') {
@@ -64,7 +66,7 @@ export async function saveProject(q: Project) {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' }
     const token = getToken()
     if (token) headers['Authorization'] = `Bearer ${token}`
-    const res = await fetch(`${base}/api/projects`, {
+    const res = await fetch(QUOTE_URL, {
       method: 'POST',
       headers,
       body: JSON.stringify(q),
@@ -86,7 +88,7 @@ export async function getProject(id: string): Promise<Project | undefined> {
     const headers: Record<string, string> = {}
     const token = getToken()
     if (token) headers['Authorization'] = `Bearer ${token}`
-    const res = await fetch(`${base}/api/projects/${id}`, { cache: 'no-store', headers })
+    const res = await fetch(`${QUOTE_URL}/${id}`, { cache: 'no-store', headers })
     if (res.ok) {
       const q = (await res.json()) as Project
       if (typeof localStorage !== 'undefined') {
@@ -112,7 +114,7 @@ export async function deleteProject(id: string) {
     const headers: Record<string, string> = {}
     const token = getToken()
     if (token) headers['Authorization'] = `Bearer ${token}`
-    const res = await fetch(`${base}/api/projects/${id}`, { method: 'DELETE', headers })
+    const res = await fetch(`${QUOTE_URL}/${id}`, { method: 'DELETE', headers })
     console.log('deleteProject status', res.status)
   } catch {
     // ignore

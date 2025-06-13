@@ -22,6 +22,7 @@ export const matchEmitter = new EventEmitter();
 const jobMap = new Map();
 
 router.get("/logs", (req, res) => {
+  console.log('Client connected to logs')
   res.set({
     "Content-Type": "text/event-stream",
     "Cache-Control": "no-cache",
@@ -32,6 +33,7 @@ router.get("/logs", (req, res) => {
   matchEmitter.on("log", send);
   req.on("close", () => {
     matchEmitter.off("log", send);
+    console.log('Client disconnected from logs')
   });
 });
 
@@ -42,10 +44,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PRICE_FILE = path.resolve(__dirname, "../../MJD-PRICELIST.xlsx");
 
 function scheduleCleanup(id) {
-  setTimeout(() => jobMap.delete(id), 60 * 60 * 1000);
+  console.log('Scheduling cleanup for job', id)
+  setTimeout(() => {
+    jobMap.delete(id)
+    console.log('Cleaned up job', id)
+  }, 60 * 60 * 1000);
 }
 
 router.get("/:jobId", (req, res) => {
+  console.log('Job status requested', req.params.jobId)
   const job = jobMap.get(req.params.jobId);
   if (!job) return res.status(404).json({ message: "Job not found" });
   if (job.error) {
@@ -140,14 +147,17 @@ router.post("/", upload.single("file"), async (req, res) => {
   try {
     if (asyncMode) {
       const jobId = nanoid();
+      console.log('Async job started', jobId)
       jobMap.set(jobId, { done: false });
       run()
         .then((result) => {
           jobMap.set(jobId, { done: true, result });
+          console.log('Async job completed', jobId)
           scheduleCleanup(jobId);
         })
         .catch((err) => {
           jobMap.set(jobId, { done: true, error: err });
+          console.log('Async job failed', jobId, err)
           scheduleCleanup(jobId);
         })
         .finally(() => {
@@ -157,6 +167,7 @@ router.post("/", upload.single("file"), async (req, res) => {
     }
 
     const results = await run();
+    console.log('Sync job completed')
     res.json(results);
   } catch (err) {
     console.error("Price match error:", err);

@@ -71,6 +71,7 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const f = e.target.files[0]
+      console.log('File selected', f.name)
       setFile(f)
       const reader = new FileReader()
       reader.onload = evt => {
@@ -139,6 +140,7 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
   const runMatch = async () => {
     if (!file) return
     if (!token) return
+    console.log('Run match clicked')
     console.log('Starting price match', {
       fileName: file.name,
       openaiKey: !!openaiKey,
@@ -170,6 +172,7 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
       console.log('Match results received', rows.length)
       setResults(rows)
       onMatched?.()
+      console.log('Collapsing inputs after match')
       setInputsCollapsed(true)
       if (projectName.trim() && clientName.trim()) {
         const id = await saveProjectData(rows)
@@ -194,10 +197,12 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
   }
 
   const handleSelect = (index: number, value: string) => {
+    console.log('Select match option', { index, value })
     updateRow(index, r => ({ ...r, selected: value === 'manual' ? 'manual' : parseInt(value, 10) }))
   }
 
   const handleSearch = async (index: number, q: string) => {
+    console.log('Search query', { index, q })
     if (!q) {
       updateRow(index, r => ({ ...r, searchResults: [] }))
       return
@@ -212,6 +217,7 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
   }
 
   const chooseManual = (rowIndex: number, item: PriceItem) => {
+    console.log('Manual item selected', { rowIndex, item })
     updateRow(rowIndex, r => {
       const match = {
         engine: 'manual',
@@ -347,11 +353,13 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
 
   const handleDeleteRow = (index: number) => {
     if (!results) return
+    console.log('Delete row', index)
     setResults(results.filter((_, i) => i !== index))
   }
 
   const exportExcel = async () => {
     if (!results || !fileData || !colIdx) return
+    console.log('Exporting Excel')
     const wb = new ExcelJS.Workbook()
     await wb.xlsx.load(fileData)
     const ws = wb.worksheets[0]
@@ -372,9 +380,11 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
     a.download = 'price_match_output.xlsx'
     a.click()
     URL.revokeObjectURL(url)
+    console.log('Excel export complete')
   }
 
   const handleSave = async () => {
+    console.log('Save quote clicked')
     if (!results) return
     if (!projectName.trim() || !clientName.trim()) {
       alert('Project and client name are required')
@@ -411,7 +421,10 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
           <Button
             type="button"
             size="sm"
-            onClick={() => setInputsCollapsed(!inputsCollapsed)}
+            onClick={() => {
+              console.log('Toggle inputs', !inputsCollapsed)
+              setInputsCollapsed(!inputsCollapsed)
+            }}
             className="bg-white/5 border-white/20"
           >
             {inputsCollapsed ? 'Show Inputs' : 'Hide Inputs'}
@@ -483,7 +496,10 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
               <Button
                 type="button"
                 size="sm"
-                onClick={() => setDiscount(discountInput)}
+                onClick={() => {
+                  console.log('Apply discount', discountInput)
+                  setDiscount(discountInput)
+                }}
                 className="bg-[#00D4FF]/20 hover:bg-[#00D4FF]/30 text-[#00D4FF] border-[#00D4FF]/30 ripple"
               >
                 Apply Discount
@@ -531,11 +547,17 @@ export function PriceMatchModule({ onMatched }: PriceMatchModuleProps) {
               </tfoot>
             </table>
             <div className="flex justify-between items-center mt-2">
-              <Button type="button" size="sm" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} className="bg-white/5 border-white/20">Prev</Button>
+              <Button type="button" size="sm" onClick={() => {
+                console.log('Prev page')
+                setPage(p => Math.max(0, p - 1))
+              }} disabled={page === 0} className="bg-white/5 border-white/20">Prev</Button>
               <span className="text-white text-sm">
                 Page {page + 1} of {pageCount || 1}
               </span>
-              <Button type="button" size="sm" onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={page + 1 >= pageCount} className="bg-white/5 border-white/20">Next</Button>
+              <Button type="button" size="sm" onClick={() => {
+                console.log('Next page')
+                setPage(p => Math.min(pageCount - 1, p + 1))
+              }} disabled={page + 1 >= pageCount} className="bg-white/5 border-white/20">Next</Button>
             </div>
           </div>
         )}

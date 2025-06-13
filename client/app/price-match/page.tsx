@@ -6,6 +6,10 @@ import { useState } from "react"
 
 export default function PriceMatchPage(){
   const [collapsed, setCollapsed] = useState(false)
+  const handleMatched = () => {
+    console.log('Price match finished')
+    setCollapsed(true)
+  }
   return (
     <DashboardLayout>
       <div className="space-y-8">
@@ -15,7 +19,7 @@ export default function PriceMatchPage(){
             <p className="text-muted-foreground mt-2">Upload a spreadsheet to find matching items</p>
           </div>
         )}
-        <PriceMatchModule onMatched={() => setCollapsed(true)} />
+        <PriceMatchModule onMatched={handleMatched} />
       </div>
     </DashboardLayout>
   )

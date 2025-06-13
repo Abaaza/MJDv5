@@ -1,7 +1,7 @@
 {
   "name": "BOQ Pricing Pro",
   "short_name": "BOQ Pricing",
-  "description": "Premium quotation management for construction projects",
+  "description": "Premium project management for construction projects",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",

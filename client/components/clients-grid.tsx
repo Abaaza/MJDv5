@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Building, Mail, Phone, MapPin, Eye } from "lucide-react"
-import { loadQuotations } from "@/lib/quotation-store"
+import { loadProjects } from "@/lib/project-store"
 import { formatCurrency } from "@/lib/utils"
 
 
@@ -27,7 +27,7 @@ export function ClientsGrid() {
   const [clients, setClients] = useState<ClientInfo[]>([])
 
   useEffect(() => {
-    loadQuotations().then(qs => {
+    loadProjects().then(qs => {
       const map = new Map<string, { projects: number; total: number }>()
       qs.forEach(q => {
         const info = map.get(q.client) || { projects: 0, total: 0 }

@@ -9,7 +9,7 @@ export default function AnalyticsPage() {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-[#00D4FF] to-[#00FF88] bg-clip-text text-transparent">
             Analytics
           </h1>
-          <p className="text-muted-foreground mt-2">Track performance and insights across your quotations</p>
+          <p className="text-muted-foreground mt-2">Track performance and insights across your projects</p>
         </div>
 
         <AnalyticsDashboard />

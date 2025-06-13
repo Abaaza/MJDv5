@@ -1,4 +1,4 @@
-export interface QuotationItem {
+export interface ProjectItem {
   id: number
   description: string
   quantity: number
@@ -7,24 +7,24 @@ export interface QuotationItem {
   total: number
 }
 
-export interface Quotation {
+export interface Project {
   id: string
   client: string
   project: string
   value: number
   status: string
   date: string
-  items: QuotationItem[]
+  items: ProjectItem[]
 }
 
-const KEY = 'quotations'
+const KEY = 'projects'
 const base = process.env.NEXT_PUBLIC_API_URL ?? ''
 
-export async function loadQuotations(): Promise<Quotation[]> {
+export async function loadProjects(): Promise<Project[]> {
   try {
-    const res = await fetch(`${base}/api/quotations`, { cache: 'no-store' })
+    const res = await fetch(`${base}/api/projects`, { cache: 'no-store' })
     if (res.ok) {
-      const data = (await res.json()) as Quotation[]
+      const data = (await res.json()) as Project[]
       if (typeof localStorage !== 'undefined') {
         localStorage.setItem(KEY, JSON.stringify(data))
       }
@@ -36,15 +36,15 @@ export async function loadQuotations(): Promise<Quotation[]> {
   if (typeof localStorage === 'undefined') return []
   try {
     const raw = localStorage.getItem(KEY)
-    return raw ? (JSON.parse(raw) as Quotation[]) : []
+    return raw ? (JSON.parse(raw) as Project[]) : []
   } catch {
     return []
   }
 }
 
-export async function saveQuotation(q: Quotation) {
+export async function saveProject(q: Project) {
   try {
-    await fetch(`${base}/api/quotations`, {
+    await fetch(`${base}/api/projects`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(q),
@@ -53,20 +53,20 @@ export async function saveQuotation(q: Quotation) {
     // ignore network errors
   }
   if (typeof localStorage === 'undefined') return
-  const all = await loadQuotations()
+  const all = await loadProjects()
   const idx = all.findIndex(i => i.id === q.id)
   if (idx >= 0) all[idx] = q
   else all.push(q)
   localStorage.setItem(KEY, JSON.stringify(all))
 }
 
-export async function getQuotation(id: string): Promise<Quotation | undefined> {
+export async function getProject(id: string): Promise<Project | undefined> {
   try {
-    const res = await fetch(`${base}/api/quotations/${id}`, { cache: 'no-store' })
+    const res = await fetch(`${base}/api/projects/${id}`, { cache: 'no-store' })
     if (res.ok) {
-      const q = (await res.json()) as Quotation
+      const q = (await res.json()) as Project
       if (typeof localStorage !== 'undefined') {
-        const all = await loadQuotations()
+        const all = await loadProjects()
         const idx = all.findIndex(i => i.id === q.id)
         if (idx >= 0) all[idx] = q
         else all.push(q)
@@ -77,18 +77,18 @@ export async function getQuotation(id: string): Promise<Quotation | undefined> {
   } catch {
     // ignore
   }
-  const all = await loadQuotations()
+  const all = await loadProjects()
   return all.find(q => q.id === id)
 }
 
-export async function deleteQuotation(id: string) {
+export async function deleteProject(id: string) {
   try {
-    await fetch(`${base}/api/quotations/${id}`, { method: 'DELETE' })
+    await fetch(`${base}/api/projects/${id}`, { method: 'DELETE' })
   } catch {
     // ignore
   }
   if (typeof localStorage === 'undefined') return
-  const all = await loadQuotations()
+  const all = await loadProjects()
   const updated = all.filter(q => q.id !== id)
   localStorage.setItem(KEY, JSON.stringify(updated))
 }

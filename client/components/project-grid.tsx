@@ -10,9 +10,9 @@ import { Eye, Edit, Download, Filter, Search, Trash } from "lucide-react"
 import Link from "next/link"
 import { useMobileOptimization } from "@/components/mobile-optimization-provider"
 import { cn, formatCurrency, formatDate } from "@/lib/utils"
-import { loadQuotations, deleteQuotation } from "@/lib/quotation-store"
+import { loadProjects, deleteProject } from "@/lib/project-store"
 
-interface Quotation {
+interface ProjectData {
   id: string
   client: string
   project: string
@@ -22,16 +22,16 @@ interface Quotation {
   items: number
 }
 
-export function QuotationGrid() {
+export function ProjectGrid() {
   const { isMobile } = useMobileOptimization()
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
-  const [quotations, setQuotations] = useState<Quotation[]>([])
-  const [visibleQuotations, setVisibleQuotations] = useState<Quotation[]>([])
+  const [projects, setProjects] = useState<ProjectData[]>([])
+  const [visibleProjects, setVisibleProjects] = useState<ProjectData[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    loadQuotations().then(raw => {
+    loadProjects().then(raw => {
       const stored = raw.map(q => ({
         id: q.id,
         client: q.client,
@@ -41,8 +41,8 @@ export function QuotationGrid() {
         date: formatDate(q.date),
         items: q.items.length
       }))
-      setQuotations(stored)
-      setVisibleQuotations(stored)
+      setProjects(stored)
+      setVisibleProjects(stored)
     })
   }, [])
 
@@ -53,34 +53,34 @@ export function QuotationGrid() {
 
       // Simulate API call delay - reduced for better UX
       setTimeout(() => {
-        const filtered = quotations.filter((quotation) => {
+        const filtered = projects.filter((project) => {
           const matchesSearch =
-            quotation.client.toLowerCase().includes(term.toLowerCase()) ||
-            quotation.project.toLowerCase().includes(term.toLowerCase()) ||
-            quotation.id.toLowerCase().includes(term.toLowerCase())
-          const matchesStatus = status === "all" || quotation.status === status
+            project.client.toLowerCase().includes(term.toLowerCase()) ||
+            project.project.toLowerCase().includes(term.toLowerCase()) ||
+            project.id.toLowerCase().includes(term.toLowerCase())
+          const matchesStatus = status === "all" || project.status === status
           return matchesSearch && matchesStatus
         })
 
-        setVisibleQuotations(filtered)
+        setVisibleProjects(filtered)
         setIsLoading(false)
       }, 150) // Reduced from 300ms to 150ms
     }, 300),
-    [quotations],
+    [projects],
   )
 
   useEffect(() => {
     if (searchTerm || statusFilter !== "all") {
       debouncedSearch(searchTerm, statusFilter)
     } else {
-      setVisibleQuotations(quotations)
+      setVisibleProjects(projects)
       setIsLoading(false)
     }
 
     return () => {
       debouncedSearch.cancel()
     }
-  }, [searchTerm, statusFilter, debouncedSearch, quotations])
+  }, [searchTerm, statusFilter, debouncedSearch, projects])
 
   const getStatusBadge = (status: string) => {
     const statusClasses = {
@@ -98,11 +98,11 @@ export function QuotationGrid() {
   }
 
   const handleDelete = async (id: string) => {
-    const confirm = window.confirm('Delete this quotation?')
+    const confirm = window.confirm('Delete this project?')
     if (!confirm) return
-    await deleteQuotation(id)
-    setQuotations(prev => prev.filter(q => q.id !== id))
-    setVisibleQuotations(prev => prev.filter(q => q.id !== id))
+    await deleteProject(id)
+    setProjects(prev => prev.filter(q => q.id !== id))
+    setVisibleProjects(prev => prev.filter(q => q.id !== id))
   }
 
   return (
@@ -113,7 +113,7 @@ export function QuotationGrid() {
           <div className="relative flex-1 sm:w-64">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <Input
-              placeholder="Search quotations..."
+              placeholder="Search projects..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 bg-white/5 border-white/10 focus:border-[#00D4FF] focus:ring-[#00D4FF]/20"
@@ -169,14 +169,14 @@ export function QuotationGrid() {
       {/* Grid */}
       {!isLoading && (
         <>
-          {visibleQuotations.length === 0 ? (
+          {visibleProjects.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <div className="h-16 w-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
                 <Search className="h-8 w-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-medium text-white mb-2">No quotations found</h3>
+              <h3 className="text-lg font-medium text-white mb-2">No projects found</h3>
               <p className="text-gray-400 max-w-md">
-                We couldn't find any quotations matching your search criteria. Try adjusting your filters or search
+                We couldn't find any projects matching your search criteria. Try adjusting your filters or search
                 term.
               </p>
               <Button
@@ -191,9 +191,9 @@ export function QuotationGrid() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {visibleQuotations.map((quotation) => (
+              {visibleProjects.map((project) => (
                 <Card
-                  key={quotation.id}
+                  key={project.id}
                   className={cn(
                     "glass-effect border-white/10 hover:border-white/20 transition-all duration-300 group",
                     !isMobile && "hover:scale-105",
@@ -201,26 +201,26 @@ export function QuotationGrid() {
                 >
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-semibold text-white truncate">{quotation.id}</h3>
-                      {getStatusBadge(quotation.status)}
+                      <h3 className="font-semibold text-white truncate">{project.id}</h3>
+                      {getStatusBadge(project.status)}
                     </div>
-                    <p className="text-sm text-gray-400">{quotation.date}</p>
+                    <p className="text-sm text-gray-400">{project.date}</p>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <p className="font-medium text-white">{quotation.client}</p>
-                      <p className="text-sm text-gray-400 truncate">{quotation.project}</p>
+                      <p className="font-medium text-white">{project.client}</p>
+                      <p className="text-sm text-gray-400 truncate">{project.project}</p>
                     </div>
 
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-2xl font-bold neon-blue">{quotation.value}</p>
-                        <p className="text-xs text-gray-400">{quotation.items} items</p>
+                        <p className="text-2xl font-bold neon-blue">{project.value}</p>
+                        <p className="text-xs text-gray-400">{project.items} items</p>
                       </div>
                     </div>
 
                     <div className="flex items-center space-x-2 pt-2">
-                      <Link href={`/quotations/${quotation.id}`} className="flex-1">
+                      <Link href={`/projects/${project.id}`} className="flex-1">
                         <Button
                           size="sm"
                           className="w-full bg-[#00D4FF]/20 hover:bg-[#00D4FF]/30 text-[#00D4FF] border-[#00D4FF]/30 ripple mobile-touch"
@@ -229,7 +229,7 @@ export function QuotationGrid() {
                           View
                         </Button>
                       </Link>
-                      <Link href={`/quotations/${quotation.id}?edit=true`}>
+                      <Link href={`/projects/${project.id}?edit=true`}>
                         <Button
                           size="sm"
                           variant="outline"
@@ -238,7 +238,7 @@ export function QuotationGrid() {
                           <Edit className="h-4 w-4" />
                         </Button>
                       </Link>
-                      <Link href={`/quotations/${quotation.id}?download=true`}>
+                      <Link href={`/projects/${project.id}?download=true`}>
                         <Button
                           size="sm"
                           variant="outline"
@@ -250,7 +250,7 @@ export function QuotationGrid() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => handleDelete(quotation.id)}
+                        onClick={() => handleDelete(project.id)}
                         className="border-red-500/30 text-red-500 hover:bg-red-500/20 ripple mobile-touch"
                       >
                         <Trash className="h-4 w-4" />

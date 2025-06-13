@@ -17,7 +17,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "BOQ Pricing Pro",
-  description: "Premium quotation management for construction projects",
+  description: "Premium project management for construction projects",
   manifest: "/manifest.json",
   themeColor: "#000000",
   appleWebApp: {

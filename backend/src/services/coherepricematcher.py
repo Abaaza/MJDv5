@@ -21,7 +21,7 @@ class PricelistMatcherApp:
         self.root.geometry("670x500")
 
         self.inquiry_path   = tk.StringVar()
-        self.api_key_var    = tk.StringVar()
+        self.api_key_var    = tk.StringVar(value=os.getenv('COHERE_API_KEY', ''))
         self.output_folder  = tk.StringVar()
         self.client         = None
 

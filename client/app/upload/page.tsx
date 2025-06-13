@@ -10,7 +10,7 @@ export default function UploadPage() {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-[#00D4FF] to-[#00FF88] bg-clip-text text-transparent">
             Upload Documents
           </h1>
-          <p className="text-muted-foreground mt-2">Upload Excel files to automatically generate quotations</p>
+          <p className="text-muted-foreground mt-2">Upload Excel files to automatically generate projects</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
